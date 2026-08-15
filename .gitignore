@@ -1,0 +1,60 @@
+# ============================================================================
+# x404hermes — PUBLIC repo. Defense-in-depth: default-deny allowlist below,
+# PLUS explicit denies for known-sensitive patterns as a second layer, so a
+# careless future `!` rule doesn't silently re-expose secrets.
+# ============================================================================
+
+# --- Layer 1: deny everything by default ---
+*
+
+# --- Layer 2: allowlist only intentionally-public code/config ---
+!/.gitignore
+!/SOUL.md
+
+!/bin/
+!/bin/hermit
+!/bin/hermit-stable
+!/bin/start-hermes-gateway.sh
+
+!/scripts/
+!/scripts/**
+
+!/plugins/
+!/plugins/**
+
+!/skills/
+!/skills/**
+
+# --- Layer 3: explicit denies within allowlisted trees ---
+# Runtime/internal state under skills/ (caches, usage stats, quarantine, backups)
+skills/.curator_state
+skills/.curator_backups/
+skills/.usage.json
+skills/.usage.json.lock
+skills/.bundled_manifest
+skills/.archive/
+skills/.hub/
+
+# Live wallet address / named session logs / financial history — not for public repo
+skills/autonomous-ai-agents/selat-agent-payments/
+
+# Compiled/cache artifacts anywhere in allowlisted trees
+**/__pycache__/
+**/*.pyc
+**/node_modules/
+**/.DS_Store
+
+# --- Layer 4: belt-and-suspenders explicit secret patterns (redundant with
+# Layer 1's default-deny, kept in case the allowlist above is ever widened) ---
+.env
+.env.*
+auth.json
+auth.lock
+*.pem
+*.key
+id_rsa*
+*_rsa
+*credentials*
+*.token
+config.yaml
+config.yaml.bak*
