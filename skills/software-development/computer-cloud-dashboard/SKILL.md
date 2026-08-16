@@ -5,7 +5,7 @@ description: |
   task/activity model, agent runners, goal loop, and integration points for
   external agents such as Hermes. Use when asked to inspect, extend, or wire
   visibility/observability into the Computer dashboard.
-version: 1.1.0
+version: 1.2.0
 platforms: [linux]
 metadata:
   hermes:
@@ -286,14 +286,45 @@ Bad: leaving it at `600` and discovering another agent cannot read it.
 - `app/api/tasks/[id]/route.ts` — single task API.
 - `components/streaming/ToolCallCard.tsx` — activity renderer.
 - `components/modules/SystemOverview.tsx` — main dashboard landing widget.
+- `components/modules/TerminalView.tsx` — xterm.js terminal UI, copy/paste,
+  WebSocket lifecycle, tab state.
 - `components/layout/MemoDesk.tsx` — main dashboard page.
 - `lib/assistant-defaults.ts` — adapter/provider defaults.
 - `lib/connections/runtime-mcp.ts` — how MCP servers are wired to Claude/Codex.
+- `server/terminal.ts` — terminal WebSocket server, tmux session management,
+  env/history setup.
 
 See `references/computer-dashboard-files.md` for session-specific excerpts and
 path notes from the initial survey. See `references/agent-trace-observability.md`
 for the design principles, and `references/agent-trace-observability-implementation.md`
 for the actual files and verification commands from the implementation session.
+See `references/terminal-copy-paste.md` for the robust copy/paste recipe used
+in `components/modules/TerminalView.tsx`.
+
+## Terminal copy/paste conventions
+
+The terminal is xterm.js inside `components/modules/TerminalView.tsx`.
+Clipboard interactions must not rely only on `navigator.clipboard` — it is
+unavailable in non-secure contexts and may be denied by browser policy. A
+robust implementation provides:
+
+- A `copyToClipboard(text)` helper that tries `navigator.clipboard.writeText`
+  first, then falls back to a temporary textarea + `document.execCommand('copy')`.
+- A `pasteFromClipboard()` helper with the symmetric `readText`/`execCommand`
+  fallback.
+- Keyboard shortcuts covering macOS (`⌘+C/V`), Linux/Windows
+  (`Ctrl+Shift+C/V`), and legacy terminal keys (`Ctrl+Insert` / `Shift+Insert`).
+- A right-click context menu offering **Copy** when text is selected and
+  **Paste** always.
+- A visible shortcut hint in the terminal tab bar so users can discover the
+  feature without documentation.
+- No `userSelect: "none"` on the terminal container; xterm.css already sets
+  `user-select: none` on the `.xterm` root, and an additional inline style on
+  the wrapper can break selection in some browsers.
+
+The server side must keep tmux mouse mode off (`set -g mouse off`) so xterm.js
+owns click/drag selection instead of passing mouse events to tmux. This is set
+in `server/terminal.ts` via the generated tmux config.
 
 ## Pitfalls
 
