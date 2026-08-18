@@ -36,22 +36,27 @@ Use this skill when the user:
 
 ```
 /data/knowledge/                 # team knowledge root (git repo)
-  KNOWLEDGE.md                  # rules for the knowledge base
-  about-me.md                   # group/orientation doc
+  KB-SCHEMA.md                  # schema and conventions for this KB
+  x404-agent-identity.md        # agent identity and operating context
+  ops-guides/                   # operational drafts awaiting human sign-off
+    *.md                        # PRDs, runbooks, migration plans
+    archive/                    # superseded guides and legacy root files
   sources/                      # raw, immutable inputs
-    meeting notes/              # exported meeting transcripts
-    requirements/               # requirements docs
-    governance/               # principles, roles, agreements
-    alignment/                # goals/objectives/mission drafts
-    uploads/                  # one-off files dropped for context
+    meeting notes/              # exported meeting transcripts and summaries
+    exercises/                  # Miro / Google Docs alignment exports
+    uploads/                    # one-off files dropped for context
   wiki/                         # synthesized, agent-maintained pages
     index.md
     log.md
     contradictions.md
-  outputs/                      # artifacts generated from the wiki
+    members.md                  # people, roles, current responsibilities
+    projects.md                 # group and member projects
+    action-items.md             # owned tasks, due dates, blockers
+    decisions.md                # ratified decisions
+    mission-objectives-commitments.md  # canonical group alignment
 ```
 
-**Rule:** Treat `sources/` as read-only evidence after ingest. Synthesis and updates belong in `wiki/` or `outputs/`.
+**Rule:** Treat `sources/` as read-only evidence after ingest. Synthesis and updates belong in `wiki/` or `ops-guides/` (drafts awaiting ratification).
 
 ### `/data/files` vs `/data/knowledge/sources/uploads`
 
@@ -75,8 +80,15 @@ See `github-auth` skill for machine-user setup details.
 Store the token in the active Hermes runtime `.env`:
 
 ```bash
-# /data/runtime/hermes-rw/.env
-GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+# /data/runtime/hermes/.env
+GITHUB_TOKEN=***
+```
+
+Use a team-controlled email and a dedicated GitHub machine user. Example from x404 Humans Found:
+
+```bash
+git config user.name "x404hermes"
+git config user.email "hermes@x404humansfound.com"
 ```
 
 ### 2. Connect the local repo to GitHub
@@ -121,7 +133,7 @@ Recommended schedule:
 | What | Where to back it up |
 |---|---|
 | Team knowledge (`/data/knowledge`) | Synced GitHub repo (shared, non-secret). |
-| Hermes runtime (`/data/runtime/hermes-rw`) | Private, encrypted backup. Contains `auth.json`, `.env`, sessions, memories, skills, cron jobs. |
+| Hermes runtime (`/data/runtime/hermes`) | Private, encrypted backup. Contains `auth.json`, `.env`, sessions, memories, skills, cron jobs. |
 
 **Never** commit runtime secrets to the knowledge repo.
 
@@ -146,6 +158,40 @@ Fathom / Granola / other notetaker
 - Primary: Fathom → GitHub upload via integration
 - Backup: Granola → email to `x404@agentmail.to` → VPS mail parser writes the file
 
+## Chief-of-staff / Orchestration Agent Workflows
+
+When the team has a chief-of-staff agent, the knowledge base is both the agent's memory and the group's shared source of truth.
+
+### 1. Meeting note → digest → action registry
+
+1. Detect a new file in `sources/meeting notes/` (usually via the git-sync cron).
+2. Read the summary/transcript and extract: decisions, action items, open questions, owners, deadlines.
+3. Update `wiki/action-items.md` and `wiki/decisions.md`.
+4. Post a concise digest to a dedicated Slack channel (e.g., `#agent-readouts`) with:
+   - Key decisions
+   - Action items with owners
+   - Open questions that need human answers
+   - Link back to the source note
+5. Append the ingest to `wiki/log.md`.
+
+### 2. Group alignment artifacts
+
+Maintain canonical alignment text as a wiki page:
+
+- `wiki/mission-objectives-commitments.md` — mission statement, objectives, commitments, operating principles.
+- Propose changes in `ops-guides/` first, then ratify via Slack or live sync, then move to `wiki/`.
+- Reference the alignment artifacts in every agenda and readout until the group internalizes them.
+
+### 3. Plans and runbooks live in `ops-guides/` first
+
+Draft PRDs, runbooks, and cleanup proposals under `ops-guides/` so humans can review and edit before anything becomes canonical. Once ratified:
+- Move summary artifacts to `wiki/`.
+- Archive the draft under `ops-guides/archive/` rather than deleting it.
+
+### 4. Clean up `sources/uploads/`
+
+Periodically review `sources/uploads/` for unreferenced images, manifests, or tool artifacts. Move unused files to `ops-guides/archive/` or delete them with human approval.
+
 ## Pitfalls
 
 - **Don't put the Hermes runtime and the knowledge repo in the same GitHub repo.** Secrets and session data must stay separate.
@@ -155,6 +201,9 @@ Fathom / Granola / other notetaker
 - **Don't let two writers push conflicting changes without a rebase strategy.** Use `git pull --rebase` before pushing.
 - **Don't sync native `.gdoc`, `.gslides`, or `.gsheet` files.** Export them to Markdown, plain text, CSV, or PDF first.
 - **Check which Hermes profile is active.** If `HERMES_HOME` points to the wrong runtime directory, cron jobs and subagents will read/write the wrong state.
+- **Don't let stale root files become permanent.** `about-me.md` and `KNOWLEDGE.md` are often auto-created or generic. Replace them with current, named files (`x404-agent-identity.md`, `KB-SCHEMA.md`) rather than leaving stale content in the KB root.
+- **Use agent-owned GitHub accounts and emails, not personal PATs.** The orchestration agent should commit as its own machine user so actions are attributable to the agent.
+- **Don't run heavy production work inside the orchestration profile.** Use dedicated sub-agents or cron jobs with isolated context for research, coding, content generation, and other heavy tasks.
 
 ## Quick Diagnostic
 
@@ -168,6 +217,10 @@ echo "Gateway HERMES_HOME:"; tr '\0' '\n' < /proc/$(pgrep -f 'hermes_cli.main ga
 ## Templates
 
 - `templates/knowledge-sync.sh` — bidirectional pull/commit/push script for a cron job.
+
+## References
+
+- `references/x404-context.md` — concrete operating context for the x404 Humans Found team KB: repos, sync cadence, agent identity, members/roles, current projects, and alignment direction.
 
 ## Related Skills
 
