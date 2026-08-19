@@ -214,6 +214,66 @@ echo "Active Hermes runtime:"; echo "${HERMES_HOME:-not set}"
 echo "Gateway HERMES_HOME:"; tr '\0' '\n' < /proc/$(pgrep -f 'hermes_cli.main gateway run')/environ 2>/dev/null | grep HERMES_HOME
 ```
 
+## Slack Knowledge Hub
+
+A dedicated Slack channel can act as both a notification surface and an upload intake for the knowledge base. This is distinct from the general chat channel: it is a focused place where the team sees what changed in the repo and intentionally drops files for long-term retention.
+
+### What to automate
+
+1. **Repo change notifications**
+   - A no-agent cron job runs every 5 minutes, compares the last known `HEAD` to the current one, and posts a compact Slack message when files are added, modified, or deleted.
+   - Message includes commit subject, author, and direct GitHub links to each changed file.
+
+2. **Slack file upload ingestion**
+   - A no-agent cron job polls the same Slack channel for messages with file attachments.
+   - Downloads the file into `/data/knowledge/sources/uploads/`, commits, and pushes to GitHub.
+   - Replies in the Slack thread with a confirmation and the GitHub link.
+
+### Implementation pattern
+
+- Create the Slack channel manually and invite the Hermes bot.
+- Add the channel to `/data/runtime/hermes/channel_directory.json` so `hermes send` and cron delivery targets can resolve it.
+- Place the scripts under `/data/knowledge/.sync/` and put thin wrappers in `/data/runtime/hermes/scripts/` (Hermes cron requires scripts under the runtime scripts directory).
+- Make the wrappers export the same git auth environment used by the systemd sync service:
+  ```bash
+  export XDG_CONFIG_HOME=/data/runtime/config
+  export GH_CONFIG_DIR=/data/runtime/config/gh
+  export HOME=/data
+  ```
+- **Ensure git actually uses that `GH_CONFIG_DIR`.** The systemd service may export `GH_CONFIG_DIR`, but if git's `credential.helper` is configured globally as `!/usr/bin/gh auth git-credential`, the helper subprocess may read the default `~/.config/gh/hosts.yml` instead. Set the helper in `/data/.gitconfig` or the repo's local config with the env var inline:
+  ```ini
+  [credential "https://github.com"]
+      helper = !GH_CONFIG_DIR=/data/runtime/config/gh /usr/bin/gh auth git-credential
+  ```
+  Verify with `cd /data/knowledge && git credential fill <<EOF` and `git fetch origin main`.
+- Create two `no_agent` cron jobs with `cronjob`:
+  - `kb-notify.sh` → `*/5 * * * *`, deliver to `slack:<channel_id>`
+  - `kb-ingest.sh` → `*/5 * * * *`, deliver `local` (it replies in Slack itself)
+- Keep the scripts state files under `/data/knowledge/.sync/` and gitignore them so they are not committed to the knowledge repo.
+
+### Monitoring the sync
+
+The systemd timer can fail silently for hours because the sync script exits 0 when `git fetch` returns an auth error before reaching the commit/push step. Monitor:
+- `journalctl --user -u hermes-knowledge-git-sync.service -n 20`
+- `/data/knowledge/.sync/git-sync-knowledge.log`
+- `cd /data/knowledge && git log --oneline -5` compared to the timer trigger time.
+
+### Workdir serialization gotcha
+
+Hermes cron jobs that declare a `workdir` run sequentially. A long-running sub-agent (e.g., a weekly curator with a `workdir` of `/data/knowledge`) will block every other cron job that touches the same directory, including the 5-minute upload/notify jobs. Keep heavy jobs short or run them without a shared workdir.
+
+### Repository hygiene
+
+- Add these to `/data/knowledge/.gitignore`:
+  ```
+  /.sync/*.log
+  /.sync/*.json
+  /.cache/
+  ```
+- This prevents the Hermes runtime catalog caches and per-script state JSON from being committed to the shared knowledge repo.
+
+See `references/slack-knowledge-hub.md` for the exact scripts and cron setup used in the x404 Humans Found KB.
+
 ## Templates
 
 - `templates/knowledge-sync.sh` — bidirectional pull/commit/push script for a cron job.
@@ -221,6 +281,7 @@ echo "Gateway HERMES_HOME:"; tr '\0' '\n' < /proc/$(pgrep -f 'hermes_cli.main ga
 ## References
 
 - `references/x404-context.md` — concrete operating context for the x404 Humans Found team KB: repos, sync cadence, agent identity, members/roles, current projects, and alignment direction.
+- `references/slack-knowledge-hub.md` — full scripts and cron job configuration for a Slack-connected knowledge base channel.
 
 ## Related Skills
 
