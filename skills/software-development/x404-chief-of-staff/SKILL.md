@@ -32,12 +32,31 @@ Use this skill when:
 ### Schedule convention
 - Weekly sync: **Wednesday 08:00 SGT / Tuesday 20:00 ET**.
 - Use the **Singapore date** for meeting folders and agendas to match the group’s YouTube conventions.
+- Example: a sync on Wednesday 2026-08-20 08:00 SGT is named `2026-08-20 x404 Humans Found Sync`.
 
 ### Agenda cycle
-1. **Tuesday 02:00 UTC** (24h before sync): create next-meeting folder under `sources/meeting notes/YYYY-MM-DD x404 Humans Found Sync/` and seed a proposed-agenda `.md`.
-2. Post the GitHub link to `#meetings` (`C0B5T66ESGY`) and ask for edits.
-3. Update the agenda file as humans give feedback in Slack or edit on GitHub.
+1. **Monday 02:00 UTC** (two days before the Wednesday sync): create the next-meeting folder under `sources/meeting notes/YYYY-MM-DD x404 Humans Found Sync/` and seed a proposed-agenda `.md`. **Do not create next week’s agenda before this week’s sync has happened.**
+2. Post to `#meetings` (`C0B5T66ESGY`) using the folder path as display text hyperlinked to the GitHub URL:
+   ```
+   :calendar: _Proposed Agenda — YYYY-MM-DD x404 Sync_
+
+   Updated the proposed agenda for this week’s sync. Please edit or add items in thread.
+
+   <https://github.com/X404Humans/x404knowledge/blob/main/sources/meeting%20notes/YYYY-MM-DD%20x404%20Humans%20Found%20Sync/YYYY-MM-DD%20x404%20Humans%20Found%20Sync%20Proposed%20Agenda.md|sources/meeting notes/YYYY-MM-DD x404 Humans Found Sync/YYYY-MM-DD x404 Humans Found Sync Proposed Agenda.md>
+   ```
+   **Do not paste raw GitHub URLs.**
+3. As humans give feedback in Slack or edit on GitHub, **update the existing agenda file and re-share it in the same Slack thread.** Do not leave stale versions live.
 4. After the meeting: digest any notes dropped into the folder and post a digest to `#meetings`.
+
+### Required agenda structure
+The proposed agenda must follow this exact order:
+
+1. **Hermes / KB / Orchestration Recap** — Tony (or designated owner) walkthrough of KB/agent changes since last sync.
+2. **Buzz Experiment Updates** — Jai / Kishore / Rodolfo updates from `#buzz`.
+3. **Heads-Up on Pressing Action Items (async follow-up only)** — list open action items that need status updates but do **not** need live discussion. A3 (Zain cloud-computer deps) and A4 (Zain/Tony webhook review) must be marked "async only; no live discussion needed."
+4. **Open Questions for Live Discussion** — only unresolved questions that truly need sync time (e.g., mission statement, rotating roles).
+5. **Pending Decisions to Ratify** — split alignment into D1 (mission/objectives/commitments) and D2 (roles & responsibilities concept).
+6. **Blockers** — current blockers and who can unblock them.
 
 ### Digest format
 ```markdown
@@ -105,6 +124,7 @@ Pitfall: `No usable credentials found for provider 'ollama-cloud'` from a sub-ag
 
 - Brief and direct.
 - Cite sources and link to KB pages.
+- When sharing GitHub links, use the folder/file path as display text and hyperlink to the full URL (`<https://github.com/X404Humans/x404knowledge/blob/main/...|sources/meeting notes/.../file.md>`). Do not paste raw GitHub URLs.
 - Default to public shared channels; use threads for deep dives.
 - When status is multi-step, reproduce the checklist in the chat before or after updating the file.
 
@@ -121,6 +141,15 @@ Unresolved questions live in `/data/knowledge/wiki/open-questions.md`. Move them
 ### Plans and execution plans
 - When the user asks for status on an execution plan, **repeat the completed/pending/blocked checklist in the chat** — do not make them pull the markdown file from GitHub to know the state.
 - Update the KB file too, but the chat is the primary interface.
+
+### Agendas vs. reference docs
+- If the user asks for a meeting agenda, **update and re-share the agenda markdown file and post it in Slack**.
+- Creating a separate ops-guide or recap doc is fine **only if explicitly requested or if it supports the agenda without replacing it**.
+- When feedback arrives, update the existing agenda and re-share in the same thread; do not leave stale versions live.
+
+### Meeting-date sequencing
+- Wait until Monday of the target week before drafting that week’s agenda.
+- Do not create next week’s agenda before this week’s sync has happened.
 
 ### Legacy KB files
 - Do not move or rename `about-me.md`, `KNOWLEDGE.md`, `manifest.json`, or other legacy files until Zain confirms they are not cloud-computer dependencies.

@@ -1,0 +1,28 @@
+:calendar: _Proposed Agenda — YYYY-MM-DD x404 Sync_
+
+Thursday YYYY-MM-DD, HH:MM SGT (Wednesday YYYY-MM-DD, 20:00 ET).
+
+_1. Hermes / KB / Orchestration Recap_
+- Tony walkthrough of the big changes this week.
+- Reference: <https://github.com/X404Humans/x404knowledge/blob/main/ops-guides/RECAP-OPS-GUIDE.md|ops-guides/RECAP-OPS-GUIDE.md>
+
+_2. Buzz Experiment Updates_
+- Jai / Kishore / Rodolfo: what’s happening in #buzz, blockers, next steps.
+
+_Action Items Needing Updates_
+- A#: Owner to do thing. — <https://github.com/X404Humans/x404knowledge/blob/main/PATH|PATH>
+
+_Async Action Items_ (no live discussion needed)
+- A#: Owner to do thing. — <https://github.com/X404Humans/x404knowledge/blob/main/PATH|PATH>
+
+_Open Questions for Live Discussion_
+- Q#: Question text. — <https://github.com/X404Humans/x404knowledge/blob/main/PATH|PATH>
+- Q#: Simple question needing no link.
+
+_Pending Decisions_
+- D#: Decision text. — <https://github.com/X404Humans/x404knowledge/blob/main/PATH|PATH>
+
+_Blockers_
+- Blocker text.
+
+Full agenda: <https://github.com/X404Humans/x404knowledge/blob/main/sources/meeting%20notes/YYYY-MM-DD%20x404%20Humans%20Found%20Sync/YYYY-MM-DD%20x404%20Humans%20Found%20Sync%20Proposed%20Agenda.md|sources/meeting notes/YYYY-MM-DD x404 Humans Found Sync/YYYY-MM-DD x404 Humans Found Sync Proposed Agenda.md>

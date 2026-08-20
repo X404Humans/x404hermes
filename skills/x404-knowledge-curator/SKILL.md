@@ -17,7 +17,7 @@ tags: [x404, sub-agent, knowledgebase, curator]
 3. Checks `sources/uploads/` for unreferenced files that should be archived.
 4. Verifies `wiki/action-items.md` has been updated within the last 7 days.
 5. Appends a log entry to `wiki/log.md`.
-6. Posts a concise curator report to `<#C0B5T66ESGY>`.
+6. Posts a concise curator report to `<#C0BQKTB2GTZ>`.
 
 ## Model
 - Uses isolated Hermes profile `x404-knowledge-curator`.
@@ -25,7 +25,7 @@ tags: [x404, sub-agent, knowledgebase, curator]
 
 ## Outputs
 - Appended entry in `wiki/log.md`.
-- Slack message in `<#C0B5T66ESGY>`.
+- Slack message in `<#C0BQKTB2GTZ>`.
 
 ## Constraints
 - Does not modify source files.
