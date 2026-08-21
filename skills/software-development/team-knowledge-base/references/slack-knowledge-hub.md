@@ -95,3 +95,4 @@ These entries prevent Hermes runtime caches and per-script state files from bein
 - The Slack bot must be invited to the channel before delivery works; verify with a manual `hermes send --to slack:<id>` test.
 - **Silent auth failures look like "no commits."** The systemd timer may run every 5 minutes and exit 0 after `git fetch` fails, so check the log and journal, not just GitHub history.
 - **Hermes cron `workdir` serialization can stall the whole KB pipeline.** A long-running sub-agent with `workdir=/data/knowledge` blocks the 5-minute upload/notify jobs. Keep sub-agents short or run them without a shared workdir.
+- **Link to `blob/main/...`, not `blob/<sha>/...`, in Slack notifications.** Private repos return 404 on commit-SHA file links for users who are not signed into GitHub with repo access (and for Slack unfurls). Use branch-relative links for all file links posted to Slack. Commit links can still use the exact SHA.
