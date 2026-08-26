@@ -11,13 +11,25 @@ tags: [x404, meeting, agenda, slack, kb]
 Draft, update, and re-share the proposed agenda for each x404 Humans Found weekly sync. Output lives in the KB and a matching Slack post in `#meetings` (`C0B5T66ESGY`).
 
 ## Schedule rule
-- Post the agenda on **Monday**.
+- Target post day is **Monday** of the sync week (3 days before a Thursday SGT sync, 2 days before a Wednesday ET sync).
 - Sync is **Wednesday 8pm ET / Thursday 8am SGT** (Thursday 9am SGT during EST).
-- Never post next week’s agenda before the current week’s sync has happened.
+- Hard guard: **never create or share a proposed agenda for a future sync before the current week’s sync has occurred.**
+  - If today is before the scheduled sync day of the current week, do not draft a new agenda — instead, wait until at least Monday of the target week.
+  - Example: if today is Wednesday 2026-08-26 and the 2026-08-27 sync has not happened yet, do not create a 2026-09-03 agenda; wait until Monday 2026-08-31 or later.
 
-## File location
+## File location and date convention
 - Markdown: `sources/meeting notes/YYYY-MM-DD x404 Humans Found Sync/YYYY-MM-DD x404 Humans Found Sync Proposed Agenda.md`
-- Date in filename is the **Thursday SGT date**.
+- `YYYY-MM-DD` in the **filename** is the **Thursday SGT date**.
+- The YAML frontmatter should include two short time fields (`time_et`, `time_sgt`) instead of a single ambiguous `date`. Values end in the exact zone abbreviation including DST where applicable:
+  ```yaml
+  time_et: Wed 2026-08-26 20:00 EDT
+  time_sgt: Thu 2026-08-27 08:00 SGT
+  ```
+- Do not include a separate `date` field in the frontmatter; the date is implicit in `time_et` and `time_sgt`.
+- The file body must also include a visible Date line listing both timezones, e.g.:
+  `Thursday 2026-08-27, 08:00 SGT (Wed 2026-08-26 20:00 ET)`
+- Never create two agenda files for the same sync (one ET date, one SGT date). If a stale duplicate exists, remove it and update Slack links to the SGT-dated canonical file.
+- See `references/date-time-convention.md` for the full convention and rationale.
 
 ## Required agenda sections (exact order)
 1. **Hermes / KB / Orchestration Recap**
@@ -25,7 +37,7 @@ Draft, update, and re-share the proposed agenda for each x404 Humans Found weekl
    - Link to latest recap ops-guide if one exists.
 2. **Buzz Experiment Updates**
 3. **Action Items Needing Updates**
-4. **Async Action Items** (no live discussion needed)
+4. **Async Action Items (no live discussion needed)**
 5. **Open Questions for Live Discussion**
 6. **Pending Decisions**
 7. **Blockers**
@@ -52,11 +64,19 @@ Draft, update, and re-share the proposed agenda for each x404 Humans Found weekl
 
 ## Pitfalls
 - Do not create a new ops-guides recap file instead of updating the agenda.
-- Do not use full GitHub URLs as link display text.
-- Do not put async-only items under the live action-items section.
-- Do not send `
-` literally; use a file or heredoc when calling `hermes send`.
+- Do not assume a referenced agenda file is missing just because it is not in the current working tree; automated KB syncs can delete uncommitted files. Check `git log --all --name-only -- "sources/meeting notes/..."` first.
+- Do not use Slack `\u003cURL|text\u003e` format inside the KB markdown file; use Markdown `[text](URL)` links there. Use `\u003cURL|text\u003e` only in the Slack post. If the user says raw URLs are showing, check the markdown source for misplaced Slack-style links and for regressions introduced while editing.
+- Do not resurrect a deleted/stale duplicate agenda file (e.g., ET-dated) when a canonical SGT-dated file already exists. Update the canonical file and update Slack links to match. See `references/deleted-stale-agendas.md`.
+- Do not trust the source file alone when the user reports a rendering issue; verify how GitHub displays the rendered file.
+- Do not put async-only items under the live action-items section; place them under **Async Action Items (no live discussion needed)** and only use that section for topics that should be async/reminder-only, not actively discussed live.
+- Do not send `\n` literally; use a file or heredoc when calling `hermes send`.
+- Do not reverse Slack hyperlink format: it is always `\u003cURL|display\u003e`, never `\u003cdisplay|URL\u003e`.
+- The Slack channel for research/market radar is `#market-research` (`C0BQURPSA8M`); there is no `#research-radar` channel. The cron job `x404-research-radar` is wired to `#market-research`.
+- The system uses uutils `date`, not GNU `date`. Date math must be done in small timezone-aware steps; do not pass combined strings like `'next wednesday 20:00 America/New_York'` to `date -d`.
 
 ## References
 - `references/agenda-format.md` — approved format transcript from 2026-08-19.
+- `references/date-time-convention.md` — SGT filename + ET/SGT dual time fields.
+- `references/markdown-vs-slack-links.md` — correct link syntax for the KB file vs the Slack post.
+- `references/deleted-stale-agendas.md` — how to recover or reconcile deleted/stale agenda files.
 - `templates/agenda.md` — starter template for future agendas.

@@ -21,9 +21,11 @@ where `YYYY-MM-DD` is the Thursday SGT date.
 
 ## Hyperlinks
 - Link every item with KB context to the relevant file.
-- Markdown: `[ops-guides/filename.md](https://github.com/X404Humans/x404knowledge/blob/main/ops-guides/filename.md)`
-- Slack: `<https://github.com/X404Humans/x404knowledge/blob/main/ops-guides/filename.md|ops-guides/filename.md>`
+- Markdown (KB file): `[ops-guides/filename.md](https://github.com/X404Humans/x404knowledge/blob/main/ops-guides/filename.md)`
+- Slack post: `<https://github.com/X404Humans/x404knowledge/blob/main/ops-guides/filename.md|ops-guides/filename.md>`
 - Plain items only when self-explanatory.
+
+See `references/markdown-vs-slack-links.md` for the full distinction.
 
 ## Slack post rules
 - Header: `:calendar: _Proposed Agenda — YYYY-MM-DD x404 Sync_`
@@ -35,5 +37,8 @@ where `YYYY-MM-DD` is the Thursday SGT date.
 ## Pitfalls
 - Don’t post next week’s agenda early.
 - Don’t use full GitHub URLs as display text.
+- Don’t use Slack `<URL|text>` links inside the KB markdown file.
 - Don’t mix async items into live action items.
 - Don’t send literal `\n`.
+- Don’t assume a referenced file is missing just because it is not in the working tree; check git history.
+- If a stale duplicate agenda exists (e.g., ET-dated vs SGT-dated), keep the SGT-dated file and update Slack links. See `references/deleted-stale-agendas.md`.
