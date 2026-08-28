@@ -54,10 +54,10 @@ for f in "${FILES[@]}"; do
     cat "$f" >> "$TMP_PROMPT"
 done
 
-OUTPUT=$(HERMES_HOME="$HERMES_HOME" /data/runtime/hermes-slack-venv/bin/python -m hermes_cli.main chat -q "$(cat "$TMP_PROMPT")" --quiet --toolsets hermes-slack,file,web 2>/dev/null || echo "*Digest generation failed*")
+OUTPUT=$(HERMES_HOME="$HERMES_HOME" /data/.hermes/hermes-agent/venv/bin/python3 -m hermes_cli.main chat -q "$(cat "$TMP_PROMPT")" --quiet --toolsets slack,file,web 2>/dev/null || echo "*Digest generation failed*")
 rm -f "$TMP_PROMPT"
 
 # Send to Slack
-HERMES_HOME="$HERMES_HOME" /data/runtime/hermes-slack-venv/bin/python -m hermes_cli.main send --to "$SLACK_CHANNEL" --subject "[Meeting Digest]" "$OUTPUT" || true
+HERMES_HOME="$HERMES_HOME" /data/.hermes/hermes-agent/venv/bin/python3 -m hermes_cli.main send --to "$SLACK_CHANNEL" --subject "[Meeting Digest]" "$OUTPUT" || true
 
 echo "$(date -Iseconds) Digested ${#FILES[@]} files" >> "$DIGEST_LOG"
