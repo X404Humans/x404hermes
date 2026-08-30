@@ -134,6 +134,16 @@ Unresolved questions live in `/data/knowledge/wiki/open-questions.md`. Move them
 
 ## Pitfalls
 
+### Missing recent meeting artifacts
+When the user asks you to synthesize a recent meeting or exercise, **do not assume the relevant notes/transcripts/screenshots are already in the local KB.** The 5-minute GitHub poll can lag behind human uploads, and local LLM commits may not have been pushed.
+
+1. First, list the expected meeting folder under `/data/knowledge/sources/meeting notes/YYYY-MM-DD x404 Humans Found Sync/`.
+2. If the folder is missing files the user references, **run `git pull origin main` immediately** instead of waiting for the cron.
+3. If the user says they just pushed, pull again and re-list before concluding artifacts are absent.
+4. **Never fall back to an older meeting’s notes as a substitute for the missing ones.** Older context can supplement, but the user's explicit reference is almost always to the most recent meeting.
+
+Example failure mode from this skill's history: the 2026-08-27 sync folder initially contained only the proposed agenda. The agent searched older 2026-08-20 materials and missed the actual 2026-08-27 discussion (OKR-style objectives/actions split, Wu-Tang/syndicate collective-promotion model, ad-hoc breakouts). A manual `git pull` revealed the transcript, Granola notes, Notion notes, and Miro screenshot.
+
 ### Slack channel references
 - Always use the actual Slack channel reference the user provides (e.g., `<#C0BQURPSA8M>`), **not** a human-readable display name you invent (e.g., `#research-radar`). Channel display names can be ambiguous or renamed; the ID is canonical.
 - Before wiring a sub-agent or cron to post to a channel, **verify the bot is a member of that channel**. If a delivery fails with `not_in_channel`, ask the human to invite `@Hermes` before retrying.
@@ -172,6 +182,7 @@ Keep it terse. Paste-ready for Claude Code.
 
 ## Related files
 
+- `references/alignment-exercise-2026-08-27.md` — session-specific learnings from the 2026-08-27 alignment exercise (OKR-style objectives/actions, Wu-Tang/syndicate model, shortened operating principles, humans/agents R&R table).
 - `references/model-constraints.md` — available models on ollama-cloud and selection rationale.
 - `references/slack-channel-routing.md` — channel IDs and routing rules.
 - `references/debug-handoff-template.md` — template for Claude Code repro handoffs.
