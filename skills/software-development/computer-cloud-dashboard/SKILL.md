@@ -300,6 +300,8 @@ for the design principles, and `references/agent-trace-observability-implementat
 for the actual files and verification commands from the implementation session.
 See `references/terminal-copy-paste.md` for the robust copy/paste recipe used
 in `components/modules/TerminalView.tsx`.
+See `references/terminal-wheel-scroll.md` for wheel/touchpad scrolling issues
+and fix options in `components/modules/TerminalView.tsx`.
 
 ## Terminal copy/paste conventions
 
@@ -324,9 +326,27 @@ robust implementation provides:
 
 The server side must keep tmux mouse mode off (`set -g mouse off`) so xterm.js
 owns click/drag selection instead of passing mouse events to tmux. This is set
-in `server/terminal.ts` via the generated tmux config.
+in `server/terminal.ts` via the generated tmux config. Note: keeping mouse off
+also means xterm.js will translate wheel events to arrow-key sequences at a
+plain shell prompt (cycling bash/zsh history instead of scrolling). See
+`references/terminal-wheel-scroll.md` for the wheel/touchpad scrolling issue
+and fix options.
 
-## Pitfalls
+## Terminal wheel/touchpad scrolling
+
+xterm.js 6.0.0 (currently pinned) rewrote the viewport/scrollbar in PR #5096.
+With `server/terminal.ts` setting `set -g mouse off`, wheel/touchpad events at
+a shell prompt become `Up`/`Down` arrow bytes, which bash/zsh reads as history
+navigation. The scrollbar may also be invisible because the old
+`.xterm-viewport::-webkit-scrollbar` CSS no longer matches the 6.x scrollbar
+DOM element, and 6.0.0 has a touch-scroll regression (issue #5489, fixed in
+6.1.0).
+
+See `references/terminal-wheel-scroll.md` for root causes and the four fix
+options (client-side wheel override, tmux mouse on, xterm upgrade, scrollbar
+CSS fix). The default recommendation is a client-side wheel handler plus a
+scrollbar CSS update, while keeping tmux mouse off to preserve the existing
+copy/paste behavior.
 
 - **Do not assume hot reload.** `/computer` is production systemd; every UI
   change needs `npm run build` + service restart.
