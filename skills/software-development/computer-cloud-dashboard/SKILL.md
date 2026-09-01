@@ -348,6 +348,16 @@ CSS fix). The default recommendation is a client-side wheel handler plus a
 scrollbar CSS update, while keeping tmux mouse off to preserve the existing
 copy/paste behavior.
 
+### Critical pitfall: do not "fix" scroll by enabling tmux mouse mode blindly
+
+Enabling `set -g mouse on` in `server/terminal.ts` makes tmux own click/drag
+selection. That breaks the native xterm.js selection and the copy/paste
+shortcuts/context menu already implemented in `TerminalView.tsx`. If you
+enable tmux mouse mode, you must also replace the client-side copy/paste
+workflow with tmux selection bindings. Prefer the client-side wheel override in
+`references/terminal-wheel-scroll.md` (Option A) when copy/paste must stay
+intact.
+
 - **Do not assume hot reload.** `/computer` is production systemd; every UI
   change needs `npm run build` + service restart.
 - **Do not confuse `/computer` with the Hermes agent runtime.** Hermes lives in

@@ -66,3 +66,12 @@ Do not embed a next alignment exercise (e.g., “Friction → Experiment”) in 
 - Do not make “experiment together” a standalone objective; it is an action that serves learning.
 - Do not add long operating-principle lists; keep it tight.
 - Do not block on key results; acknowledge and defer.
+- Do not assume the latest meeting artifacts are already in the local KB. The 5-minute GitHub poll lags; pull immediately when the user references newly uploaded notes, transcripts, or screenshots.
+- Do not fall back to an older meeting’s notes as a substitute for missing recent artifacts. Always pull first.
+
+## Naming and archiving conventions
+
+- Canonical alignment docs live in `ops-guides/` without a date prefix (e.g., `group-alignment-v3.md`).
+- Prior drafts are moved to `ops-guides/archive/` with a version suffix (e.g., `archive/group-alignment-proposal-v1.md`, `archive/group-alignment-v2.md`).
+- When archiving, update any internal references in the canonical draft to point to the archived versions.
+- When the user asks to “move prior drafts to archive,” this means: rename the current file to a versioned name under `ops-guides/archive/`, and create an undated canonical copy in `ops-guides/` for the active draft.

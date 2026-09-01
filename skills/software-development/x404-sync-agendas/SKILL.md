@@ -31,16 +31,22 @@ Draft, update, and re-share the proposed agenda for each x404 Humans Found weekl
 - Never create two agenda files for the same sync (one ET date, one SGT date). If a stale duplicate exists, remove it and update Slack links to the SGT-dated canonical file.
 - See `references/date-time-convention.md` for the full convention and rationale.
 
-## Required agenda sections (exact order)
-1. **Hermes / KB / Orchestration Recap**
-   - Tony walkthrough slot.
-   - Link to latest recap ops-guide if one exists.
-2. **Buzz Experiment Updates**
-3. **Action Items Needing Updates**
-4. **Async Action Items (no live discussion needed)**
-5. **Open Questions for Live Discussion**
-6. **Pending Decisions**
-7. **Blockers**
+## Default agenda sections (exact order)
+1. **Sharing**
+   - Personal project share, or a relevant read/experience from the past week if no project is ready.
+   - Keep bullets terse and in the same style as other agenda sections.
+   - If the user gives you exact wording, preserve the meaning but rewrite to match the agenda's terse style and bullet form unless they explicitly ask for a verbatim quote.
+2. **Action Items Needing Updates**
+3. **Async Action Items (no live discussion needed)**
+4. **Open Questions for Live Discussion**
+5. **Pending Decisions**
+6. **Blockers**
+
+### Retiring default sections
+- Do **not** carry `Hermes / KB / Orchestration Recap` or `Buzz Experiment Updates` as standing default sections. They were retired from the standing template after the 2026-08-20 sync and should only be added back if the group explicitly asks for them that week.
+- If a participant says a default topic was already covered in a recent sync and should not reappear, **remove it immediately** and renumber the remaining sections.
+- Do not resurrect removed sections in later drafts of the same agenda; treat the removal as a decision for that sync.
+- When a topic is removed, any linked recap/ops-guide references should also be removed from that agenda so the file does not resurrect them implicitly.
 
 ## Hyperlinking rule
 - Link every action item, open question, and pending decision that has context in the KB.
@@ -69,6 +75,7 @@ Draft, update, and re-share the proposed agenda for each x404 Humans Found weekl
 - Do not resurrect a deleted/stale duplicate agenda file (e.g., ET-dated) when a canonical SGT-dated file already exists. Update the canonical file and update Slack links to match. See `references/deleted-stale-agendas.md`.
 - Do not trust the source file alone when the user reports a rendering issue; verify how GitHub displays the rendered file.
 - Do not put async-only items under the live action-items section; place them under **Async Action Items (no live discussion needed)** and only use that section for topics that should be async/reminder-only, not actively discussed live.
+- Do not transcribe the user's exact explanation into a long, literal agenda bullet. Capture the intent and rewrite it to match the terse, bullet-style voice of the other agenda sections.
 - Do not send `\n` literally; use a file or heredoc when calling `hermes send`.
 - Do not reverse Slack hyperlink format: it is always `\u003cURL|display\u003e`, never `\u003cdisplay|URL\u003e`.
 - The Slack channel for research/market radar is `#market-research` (`C0BQURPSA8M`); there is no `#research-radar` channel. The cron job `x404-research-radar` is wired to `#market-research`.
@@ -79,4 +86,4 @@ Draft, update, and re-share the proposed agenda for each x404 Humans Found weekl
 - `references/date-time-convention.md` — SGT filename + ET/SGT dual time fields.
 - `references/markdown-vs-slack-links.md` — correct link syntax for the KB file vs the Slack post.
 - `references/deleted-stale-agendas.md` — how to recover or reconcile deleted/stale agenda files.
-- `templates/agenda.md` — starter template for future agendas.
+- `templates/agenda-slack.txt` — starter template for the Slack post (updated to start with Sharing, no standing Hermes/KB or Buzz sections).

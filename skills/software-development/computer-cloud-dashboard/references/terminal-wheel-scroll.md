@@ -45,12 +45,13 @@ manually instead of letting xterm.js send arrow keys.
 
 ```ts
 term.attachCustomWheelEventHandler((ev) => {
-  if (!ev.deltaY) return false; // let xterm handle horizontal wheels
-  const lines = Math.round(ev.deltaY / 50);
-  if (lines !== 0) {
-    term.scrollLines(lines > 0 ? -lines : -lines);
-  }
-  return false; // stop xterm.js from sending wheel bytes to the PTY
+  // Let modifier+wheel through (e.g. Ctrl+wheel zoom if ever enabled).
+  if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.shiftKey) return true;
+  // For normal wheel/trackpad scrolling, tell xterm.js NOT to translate the
+  // wheel event into terminal input bytes. xterm.js will still scroll its own
+  // viewport natively, so the user sees scrollback move rather than bash/zsh
+  // cycling through command history.
+  return false;
 });
 ```
 
@@ -58,10 +59,12 @@ Caveats:
 - Returning `false` suppresses xterm's wheel handling entirely. Inside
   full-screen TUIs (e.g. Claude Code, `less`, `vim`) that means wheel scrolling
   will be disabled unless the app requests mouse tracking itself. If those apps
-  are important, gate the override: only suppress when there is scrollback, or
-  expose a user toggle.
-- Scroll amount (`50`) is a heuristic; trackpads produce pixel deltas and may
-  need `Math.round(ev.deltaY / 40)` or `Math.sign(ev.deltaY)`.
+  are important, gate the override (e.g. only suppress when the terminal is not
+  in the alternate screen buffer) or expose a user toggle.
+- This is the simplest implementation. If xterm.js's native viewport scrolling
+  feels too fast or slow for trackpads, switch to a manual
+  `term.scrollLines(Math.sign(ev.deltaY) * lines)` approach and call
+  `ev.preventDefault()`.
 
 ### Option B — enable tmux mouse mode (simplest, but breaks native selection)
 
@@ -85,10 +88,44 @@ at a plain shell prompt — combine with Option A for that.
 
 ### Option D — fix the scrollbar CSS
 
-Inspect the live DOM after the build to find the real scrollbar element. In
-xterm.js 6.x it is typically `.xterm-decoration-scrollbar` or an internal layer
-rather than `.xterm-viewport`. Add matching CSS and remove or update the stale
-`.xterm-viewport::-webkit-scrollbar` block in `globals.css`.
+In xterm.js 6.x the internal scrollbar element changed. Target the likely classes
+and keep the old `.xterm-viewport` selector as a fallback:
+
+```css
+/* WebKit */
+.xterm-viewport::-webkit-scrollbar,
+.xterm-decoration-scrollbar::-webkit-scrollbar,
+.xterm-screen::-webkit-scrollbar {
+  width: 6px;
+}
+.xterm-viewport::-webkit-scrollbar-track,
+.xterm-decoration-scrollbar::-webkit-scrollbar-track,
+.xterm-screen::-webkit-scrollbar-track {
+  background: transparent;
+}
+.xterm-viewport::-webkit-scrollbar-thumb,
+.xterm-decoration-scrollbar::-webkit-scrollbar-thumb,
+.xterm-screen::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 3px;
+}
+.xterm-viewport::-webkit-scrollbar-thumb:hover,
+.xterm-decoration-scrollbar::-webkit-scrollbar-thumb:hover,
+.xterm-screen::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+/* Firefox */
+.xterm-viewport,
+.xterm-decoration-scrollbar,
+.xterm-screen {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af transparent;
+}
+```
+
+If the thumb is still invisible after deployment, inspect the live xterm DOM
+(in the browser DevTools) and add the actual scrollbar class to the selector
+list in `app/globals.css`.
 
 ## Recommended combination
 
