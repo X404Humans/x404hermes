@@ -18,7 +18,7 @@ HERMES_WRAPPER="/data/.local/bin/x404-knowledge-curator"
 # the live gateway connection and does not depend on this script.
 CHAT_TIMEOUT=300
 
-PROMPT=$(cat <<EOF
+PROMPT=$(cat <<'EOF'
 You are the x404 knowledge-curator sub-agent. Run a lightweight weekly health check on the x404 knowledgebase at ${KB}.
 
 Tasks:
