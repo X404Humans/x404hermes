@@ -12,11 +12,13 @@ claude-design
 codebase-inspection
 codex
 comfyui
+computer-use
 design-md
 evaluating-llms-harness
 excalidraw
 findmy
 gif-search
+github-auth
 github-code-review
 github-issues
 github-pr-workflow
@@ -27,6 +29,7 @@ huggingface-hub
 humanizer
 imessage
 llama-cpp
+llm-wiki
 manim-video
 maps
 nano-pdf
